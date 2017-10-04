@@ -1,0 +1,9 @@
+*.caffemodel
+*.solverstate
+*.png
+*.pyc
+*.binaryproto
+*.npy
+*.json
+*.mdb
+.DS_Store
