@@ -64,6 +64,7 @@ def train(pre_trained_weight=None):
         solver.restore(snapshot_prefix + '_iter_%d.solverstate' % start_iter)
     elif pre_trained_weight is not None:
         solver.net.copy_from(pre_trained_weight)
+        print ("using pre_trained:",pre_trained_weight)
     curr_iter = start_iter
     try:
         while 1:
@@ -77,6 +78,6 @@ def train(pre_trained_weight=None):
 if mode == 'train':
     train()
 elif mode == 'trainP':
-    train("../common/pre_trained/bvlc_reference_caffenet.caffemodel")
+    train(pre_trained_weight)
 else:
     test()

@@ -31,6 +31,7 @@ test_json = os.path.join(db_path,'test.json')
 #Train
 solver_prototxt = 'solver.prototxt'
 snapshot_prefix = snapshot_path + os.sep
+pre_trained_weight = '../common/pre_trained/bvlc_reference_caffenet.caffemodel'
 
 #Test
 test_prototxt = 'train.prototxt'
