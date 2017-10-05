@@ -82,7 +82,7 @@ def test():
                 # Uncomment to output intermediate images
                 #img_prefix = 'layers/{s}_{n}_{d:08d}/'.format(s=s, n=n, d=d)
                 #os.makedirs(img_prefix, exist_ok=True)
-                #for layer in net.blobs.keys():
+                #for layer in test_net.blobs.keys():
                 #    blobs_to_image(img_prefix + layer + '.png', test_net, layer)
 
                 #Calculate Accuracy
