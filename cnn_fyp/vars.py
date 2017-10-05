@@ -3,10 +3,10 @@ import os
 #Size of images
 IMAGE_WIDTH = 227
 IMAGE_HEIGHT = 227
-IMAGE_CROP_TOP = 10
+IMAGE_CROP_TOP = 12
 IMAGE_CROP_BOTTOM = 60
-IMAGE_CROP_LEFT = 100
-IMAGE_CROP_RIGHT = 100
+IMAGE_CROP_LEFT = 90
+IMAGE_CROP_RIGHT = 90
 
 #Image Selections
 peek = 0.6
@@ -35,6 +35,4 @@ pre_trained_weight = '../common/pre_trained/bvlc_reference_caffenet.caffemodel'
 
 #Test
 test_prototxt = 'train.prototxt'
-test_json = 'db/test.json'
-test_npy = 'db/test_mean.npy'
 final_layer = 'prob'
