@@ -20,13 +20,13 @@ with open(emotions, 'r') as f:
 data = {}
 
 def get_tup(root, name, emotion=True):
-    path = os.path.join(root, name)
     parts = name.split('_')
     s = parts[0]
     n = parts[1]
+    path = os.path.join(root, name)
     d = int(parts[2].split('.')[0])
     e = 0
-    if emotion and s in emotions and n in emotions[s]:
+    if emotion:
         e = emotions[s][n]
     return (path, e, s, n, d)
 
@@ -35,14 +35,18 @@ size = 0
 for root, dirs, files in os.walk(source_path):
     if len(files) == 0:
         continue
+    parts = root.split(os.sep)
+    s = parts[-2]
+    n = parts[-1]
+    if s not in emotions or n not in emotions[s]:
+        continue
     if root not in data:
         data[root] = []
-    files = sorted(files)
-    files = [f for f in files if f != '.DS_Store']
-    for name in files[int(len(files)*peek):]:
+    files = [f for f in sorted(files) if f != '.DS_Store']
+    for name in files[int(len(files) * peek):]:
         data[root].append(get_tup(root, name))
         size += 1
-    for name in files[:int(len(files)*neutral)]:
+    for name in files[:int(len(files) * neutral)]:
         data[root].append(get_tup(root, name, False))
         size += 1
 

@@ -2,6 +2,8 @@ import caffe
 import sys
 import numpy as np
 import cv2
+import matplotlib.pyplot as plt
+import os
 sys.path.append('.')
 from vars import *
 
@@ -20,6 +22,32 @@ else:
             if i > start_iter:
                 start_iter = i
 
+def blobs_to_image(imname, net, layer, padding=5):
+    if layer not in net.blobs:
+        return
+    data = net.blobs[layer].data[0]
+    shape = data.shape
+    if len(shape) != 3:
+        return
+    num_column = int(round(np.prod(shape)**(.5)/shape[2]))
+    num_row = int(round(shape[0]/num_column + .5))
+    height = num_row*(shape[1] + padding) - padding
+    width = num_column*(shape[2] + padding) - padding
+    result = np.zeros((height, width))
+    x = 0
+    y = 0
+    for n in range(shape[0]):
+        if x == num_row:
+            x = 0
+            y += 1
+        a = y * (shape[1] + padding)
+        b = x * (shape[2] + padding)
+        for j in range(shape[2]):
+            for i in range(shape[1]):
+                result[a + i, b + j] = data[n, i, j]
+        x += 1
+    plt.imsave(imname, result, cmap='gray')
+
 def test():
     test_net = caffe.Net(test_prototxt, snapshot_prefix + '_iter_%d.caffemodel' % start_iter, caffe.TEST)
     transformer = caffe.io.Transformer({'data': test_net.blobs['data'].data.shape})
@@ -27,19 +55,11 @@ def test():
     transformer.set_transpose('data', (2,0,1))
     transformer.set_channel_swap('data', (2,1,0))
     transformer.set_raw_scale('data', 255.0)
-    def test_image(fname, i, net):
-        image = caffe.io.load_image(fname)
-        #Crop
-        image = image[IMAGE_CROP_TOP:-IMAGE_CROP_BOTTOM-1, IMAGE_CROP_LEFT:-IMAGE_CROP_RIGHT-1]
-        image = transformer.preprocess('data', image)
-        out = net.forward(data=np.asarray([image]))
-        return net.blobs[final_layer].data[0].flatten().argsort()[::-1].tolist()
     length = test_net.blobs[final_layer].data.shape[1]
     top_k = [0] * length
     size = 0
 
     import json
-    import os
     with open(test_json, 'r') as f:
         test_data = json.load(f)
     for s, item in test_data.items():
@@ -47,7 +67,25 @@ def test():
             for d in ds:
                 expected = d[1]
                 d = d[0]
-                result = test_image(os.path.join(source_path, '{s}/{n}/{s}_{n}_{d:08d}.png'.format(e=expected, s=s, n=n, d=d)), start_iter, test_net)
+                fname = os.path.join(source_path, '{s}/{n}/{s}_{n}_{d:08d}.png'.format(e=expected, s=s, n=n, d=d))
+                image = caffe.io.load_image(fname)
+                #Crop
+                image = image[IMAGE_CROP_TOP:-IMAGE_CROP_BOTTOM-1, IMAGE_CROP_LEFT:-IMAGE_CROP_RIGHT-1]
+                image = transformer.preprocess('data', image)
+
+                #Forward
+                test_net.forward(data=np.asarray([image]))
+
+                #Get results
+                result = net.blobs[final_layer].data[0].flatten().argsort()[::-1].tolist()
+
+                # Uncomment to output intermediate images
+                #img_prefix = 'layers/{s}_{n}_{d:08d}/'.format(s=s, n=n, d=d)
+                #os.makedirs(img_prefix, exist_ok=True)
+                #for layer in net.blobs.keys():
+                #    blobs_to_image(img_prefix + layer + '.png', test_net, layer)
+
+                #Calculate Accuracy
                 index = result.index(expected)
                 for i in range(index, length):
                     top_k[i] += 1
