@@ -77,7 +77,7 @@ def test():
                 test_net.forward(data=np.asarray([image]))
 
                 #Get results
-                result = net.blobs[final_layer].data[0].flatten().argsort()[::-1].tolist()
+                result = test_net.blobs[final_layer].data[0].flatten().argsort()[::-1].tolist()
 
                 # Uncomment to output intermediate images
                 #img_prefix = 'layers/{s}_{n}_{d:08d}/'.format(s=s, n=n, d=d)
@@ -102,7 +102,7 @@ def train(pre_trained_weight=None):
         solver.restore(snapshot_prefix + '_iter_%d.solverstate' % start_iter)
     elif pre_trained_weight is not None:
         solver.net.copy_from(pre_trained_weight)
-        print ("using pre_trained:",pre_trained_weight)
+        print ("using pre_trained:", pre_trained_weight)
     curr_iter = start_iter
     try:
         while 1:

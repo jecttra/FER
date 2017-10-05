@@ -10,10 +10,10 @@ layer {
   transform_param {
     mirror: true
     crop_size: 227
-    mean_file: "/home/mak/workplace/FER/cnn_fyp/db/train_mean.binaryproto"
+    mean_file: "./db/train_mean.binaryproto"
   }
   data_param {
-    source:"/home/mak/workplace/FER/cnn_fyp/db/train_lmdb"
+    source:"./db/train_lmdb"
     batch_size: 90
     backend: LMDB
   }
